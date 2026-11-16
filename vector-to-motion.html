@@ -1,0 +1,365 @@
+<title>Vector to Motion</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one column route, a sticky stage bar, each stage = Tools course then Projects ladder (3 rungs side by side, stacking on phones) */
+:root{
+  --bg:#F5F6F8; --surface:#FFFFFF; --fg:#15161A; --muted:#5E6270; --line:#DCDFE6;
+  --il:#FF6A1A; --af:#1FA67A; --fi:#7B5CFF; --cv:#E8417A; --ae:#2F6BFF;
+  --done:#1FA67A; --key-bg:#ECEEF2;
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body:"Inter", system-ui, -apple-system, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111216; --surface:#1A1C22; --fg:#ECEDF1; --muted:#9A9FAD; --line:#2C2F38;
+  --il:#FF8240; --af:#3CC796; --fi:#9C85FF; --cv:#FF6699; --ae:#5C8DFF; --done:#3CC796; --key-bg:#262932; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111216; --surface:#1A1C22; --fg:#ECEDF1; --muted:#9A9FAD; --line:#2C2F38;
+  --il:#FF8240; --af:#3CC796; --fi:#9C85FF; --cv:#FF6699; --ae:#5C8DFF; --done:#3CC796; --key-bg:#262932; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--body)}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+p{margin:0}
+.eyebrow{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+header.hero{padding-block:48px 28px}
+.hero-grid{display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center}
+.hero h1{font-size:clamp(40px,7vw,72px);font-weight:800;letter-spacing:-.02em}
+.hero .lede{margin-top:16px;max-width:60ch;color:var(--muted);font-size:17px}
+.hero svg{width:min(260px,32vw);height:auto;overflow:visible}
+.hero svg .curve{stroke:var(--fg);stroke-width:5;fill:none;stroke-linecap:round}
+.hero svg .handle{stroke:var(--il);stroke-width:1.5}
+.hero svg .knob{fill:var(--il)}
+.hero svg .anchor{fill:var(--surface);stroke:var(--fg);stroke-width:2}
+@media (max-width:640px){.hero-grid{grid-template-columns:1fr}.hero svg{width:200px}}
+
+.progress{display:flex;align-items:center;gap:12px;margin-top:24px;font:500 13px var(--mono);color:var(--muted)}
+.bar{flex:1;max-width:360px;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--done);transition:width .3s}
+
+nav.stages{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+nav.stages .wrap{display:flex;gap:8px;overflow-x:auto;padding-block:10px;scrollbar-width:none}
+nav.stages a{flex:none;display:flex;align-items:center;gap:8px;text-decoration:none;font:600 13px var(--body);padding:7px 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface)}
+nav.stages a:focus-visible,button:focus-visible,input:focus-visible+span{outline:2px solid var(--ae);outline-offset:2px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--c)}
+nav.stages small{font:500 11px var(--mono);color:var(--muted)}
+
+.why{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;padding-block:28px 8px}
+.why div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.why b{display:block;font:700 15px var(--display);margin-bottom:4px}
+.why p{color:var(--muted);font-size:14px}
+
+section.stage{padding-block:44px 8px;scroll-margin-top:60px}
+.stage-head{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;border-top:6px solid var(--c);padding-top:18px}
+.stage-head h2{font-size:clamp(28px,4.5vw,40px);font-weight:800}
+.stage-head .tag{font:500 12px var(--mono);color:var(--c)}
+.stage-intro{margin-top:10px;max-width:68ch;color:var(--muted)}
+
+h3.course{margin-top:28px;font-size:20px;font-weight:700;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+h3.course span{font:500 12px var(--mono);color:var(--muted)}
+
+ol.tools{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+ol.tools li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;min-width:0}
+.row{display:flex;gap:10px;align-items:flex-start}
+.row .body{min-width:0;flex:1}
+.tname{font-weight:600}
+.task{color:var(--muted);font-size:13.5px;margin-top:2px}
+kbd{font:500 11.5px var(--mono);background:var(--key-bg);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;white-space:nowrap}
+
+.ladder{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+@media (max-width:860px){.ladder{grid-template-columns:1fr}}
+.rung h4{font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;gap:6px;align-items:center}
+.rung h4 .pips{color:var(--c);letter-spacing:2px}
+.proj{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:8px}
+.proj .pname a{font-weight:600;text-decoration:none;border-bottom:1.5px solid var(--c)}
+.proj .pname a:hover{color:var(--c)}
+.proj .make{font-size:13.5px;margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.chip{font:500 11px var(--mono);padding:2px 7px;border-radius:99px;background:var(--key-bg);color:var(--muted)}
+.chip.reuse{background:transparent;border:1px dashed var(--c);color:var(--fg)}
+
+label.chk{position:relative;flex:none;margin-top:2px;cursor:pointer}
+label.chk input{position:absolute;opacity:0;width:20px;height:20px;margin:0;cursor:pointer}
+label.chk span{display:block;width:20px;height:20px;border-radius:5px;border:2px solid var(--line);background:var(--surface)}
+label.chk input:checked+span{background:var(--done);border-color:var(--done)}
+label.chk input:checked+span::after{content:"";display:block;width:5px;height:10px;margin:2px 0 0 6px;border:solid var(--surface);border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.is-done .tname,.is-done .pname{opacity:.55}
+
+table.map{width:100%;border-collapse:collapse;margin-top:14px;font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.tablewrap{overflow-x:auto}
+table.map th,table.map td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+table.map th{font:600 12px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
+.week{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;max-width:72ch}
+.week li{margin-block:4px}
+footer{padding-block:48px 64px;color:var(--muted);font-size:14px}
+footer ul{padding-left:18px}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+<header class="hero wrap">
+  <div class="hero-grid">
+    <div>
+      <p class="eyebrow">A personal course for AY · built from your Pinterest saves</p>
+      <h1>Vector to Motion</h1>
+      <p class="lede">Learn vector editing properly in Illustrator first, carry it into Affinity and Figma, then bring your own drawings to life in Cavalry and After Effects. Every app has two courses: a tools tour with one small task per tool, then a project ladder built from pins you saved.</p>
+      <div class="progress"><span id="pct">0% done</span><div class="bar"><i id="barfill"></i></div><span id="count"></span></div>
+    </div>
+    <svg viewBox="0 0 260 170" aria-hidden="true">
+      <path class="curve" d="M20 140 C 60 20, 150 20, 140 90 S 220 160, 240 40"/>
+      <line class="handle" x1="20" y1="140" x2="60" y2="20"/><circle class="knob" cx="60" cy="20" r="5"/>
+      <line class="handle" x1="140" y1="90" x2="150" y2="20"/><circle class="knob" cx="150" cy="20" r="5"/>
+      <line class="handle" x1="140" y1="90" x2="130" y2="160"/><circle class="knob" cx="130" cy="160" r="5"/>
+      <rect class="anchor" x="14" y="134" width="12" height="12"/>
+      <rect class="anchor" x="134" y="84" width="12" height="12"/>
+      <rect class="anchor" x="234" y="34" width="12" height="12"/>
+    </svg>
+  </div>
+</header>
+
+<nav class="stages" aria-label="Stages"><div class="wrap" id="nav"></div></nav>
+
+<div class="wrap">
+  <div class="why">
+    <div><b>Statics before motion</b><p>Motion design is vector shapes changing over time. If you can build it cleanly, you can animate it.</p></div>
+    <div><b>Your saves are the syllabus</b><p>Every project links to a pin you saved, graded by the tools it needs, so saving turns into making.</p></div>
+    <div><b>Reuse your own files</b><p>Projects marked <span class="chip reuse">uses your file</span> animate something you already drew in an earlier stage.</p></div>
+  </div>
+
+  <h3 class="course">A good week <span>about 5 hours</span></h3>
+  <ol class="week">
+    <li><b>Two short sessions</b>: 3 to 4 tools from the tools course, one micro-task each.</li>
+    <li><b>One long session</b>: one project from the ladder. Rebuild the pin, then make a version with your own word, colours or subject.</li>
+    <li><b>Post it</b>: put the rebuild next to the original. Seeing the gap is the lesson.</li>
+    <li>Move up a rung after 2 projects feel easy. Don't skip Illustrator's beginner rung, even if it feels slow.</li>
+  </ol>
+</div>
+
+<main class="wrap" id="stages"></main>
+
+<footer class="wrap">
+  <p class="eyebrow">Free references to keep open</p>
+  <ul>
+    <li><a href="https://bezier.method.ac/" target="_blank" rel="noopener">The Bézier Game</a>: pen tool practice in the browser. Do it before Illustrator lesson 6.</li>
+    <li><a href="https://helpx.adobe.com/illustrator/tutorials.html" target="_blank" rel="noopener">Adobe Illustrator tutorials</a> and <a href="https://helpx.adobe.com/after-effects/tutorials.html" target="_blank" rel="noopener">After Effects tutorials</a>: official, short, free.</li>
+    <li><a href="https://cavalry.studio/docs/" target="_blank" rel="noopener">Cavalry docs</a> and the <a href="https://cavalry.studio/docs/getting-started/example-files/" target="_blank" rel="noopener">example files</a> (download from Scenery).</li>
+    <li><a href="https://www.canva.com/design-school/lessons/create-your-first-scene-in-cavalry" target="_blank" rel="noopener">Canva Design School: Cavalry lessons</a> and <a href="https://classcentral.com/course/domestika-3747-introduction-to-cavalry-for-motion-197542" target="_blank" rel="noopener">Introduction to Cavalry (Domestika)</a>.</li>
+  </ul>
+  <p style="margin-top:16px">Ticks are saved in this browser only. Pins are from AY Design Labs' saves; rebuild them for practice and credit the original designer if you post.</p>
+</footer>
+
+<script>
+const PIN = id => `https://www.pinterest.com/pin/6713882569990${id}/`;
+const STAGES = [
+ {id:'illustrator', name:'Illustrator', c:'--il', tag:'Stage 1 · vector foundation',
+  intro:'The core of everything that follows. Learn anchors, handles and paths here, and every other app on this page gets easier.',
+  toolsTitle:'Course 1 · Tools tour', toolsMeta:'19 tools · about 6 hours',
+  tools:[
+   ['Artboards and the workspace','<kbd>Shift O</kbd>','Make a file with three 1080 × 1080 artboards and name them.'],
+   ['Selection vs Direct Selection','<kbd>V</kbd> <kbd>A</kbd>','Draw a square. Move it with V, then drag one corner anchor with A to make a kite.'],
+   ['Shapes and Live Corners','<kbd>M</kbd> <kbd>L</kbd>','Make a pill, a rounded star and a rounded triangle using only the corner widgets.'],
+   ['Shape Builder','<kbd>Shift M</kbd>','Overlap three circles. Merge two into a cloud, cut the third into a crescent moon.'],
+   ['Pathfinder','Window › Pathfinder','Rebuild the cloud and moon with Unite and Minus Front. Note which you prefer.'],
+   ['Pen tool: straight lines','<kbd>P</kbd>','Trace a lightning bolt and a house with clicks only. Close each path.'],
+   ['Pen tool: curves','<kbd>P</kbd> <kbd>Shift C</kbd>','Trace a heart and the letter S with as few anchors as possible (aim for 4 and 6).'],
+   ['Curvature tool, add and delete anchors','<kbd>Shift ~</kbd> <kbd>+</kbd> <kbd>-</kbd>','Draw a wave with the Curvature tool, then remove every anchor you don\'t need.'],
+   ['Pencil, Paintbrush, Blob Brush, Shaper','<kbd>N</kbd> <kbd>B</kbd> <kbd>Shift B</kbd>','Draw the same squiggle with each. Look at the anchors each one makes.'],
+   ['Stroke panel and Width tool','<kbd>Shift W</kbd>','Make a line that starts thin, swells in the middle and ends round-capped.'],
+   ['Colour, swatches and global colours','<kbd>I</kbd>','Make a 5-colour global palette. Recolour a whole drawing by editing one swatch.'],
+   ['Gradients, including on strokes','<kbd>G</kbd>','Put a 3-stop gradient along a curved stroke so the colour follows the line.'],
+   ['Type: point, area, on a path','<kbd>T</kbd>','Set a word along a circle, then Create Outlines (<kbd>Shift Cmd O</kbd>) and edit one letter.'],
+   ['Transform, Align and Transform Again','<kbd>R</kbd> <kbd>O</kbd> <kbd>Cmd D</kbd>','Rotate a copy of a petal 30° around a point, then repeat until you have a flower.'],
+   ['Clipping masks and Draw Inside','<kbd>Cmd 7</kbd> <kbd>Shift D</kbd>','Put stripes inside a letter, once with a clipping mask and once with Draw Inside.'],
+   ['Repeat and Pattern Options','Object › Repeat','Make one radial, one grid and one mirror repeat from the same shape, then a tiling pattern swatch.'],
+   ['Appearance panel and effects','Effect › Distort','Give one shape two strokes and a Zig Zag, then Expand Appearance to see the real paths.'],
+   ['Blend tool','<kbd>W</kbd>','Blend a small circle into a big one along a curved path with 20 steps.'],
+   ['Layers and export for motion','<kbd>F7</kbd>','Put every part of a drawing on its own named layer and export an SVG. You will animate it later.']
+  ],
+  ladder:[
+   ['Beginner','●○○',[
+    ['Building Blocks letters','42296','Your initials built only from squares, circles and quarter circles.',['Shapes','Shape Builder','Live Corners']],
+    ['Pixel grid poster','42222','A 12 × 8 grid of colour cells that spells a short word.',['Split into Grid','Recolor Artwork']],
+    ['Half-circle icon set','42248','Six icons built from halves and quarters of a circle.',['Pathfinder','Align']],
+    ['LATIN colour-fill type','42142','A bold word filled with colourful shapes behind a mask.',['Type','Create Outlines','Clipping mask']],
+    ['Art Star overlapping letters','42285','Three tall serif letters overlapping in Multiply.',['Type','Blend modes','Opacity']]
+   ]],
+   ['Intermediate','●●○',[
+    ['Enjoy the journey','42256','A thick squiggle with your own sentence running along it.',['Pen','Width tool','Type on a path']],
+    ['Line icons in circles','42306','Three hand-drawn line icons with matching stroke weight.',['Pen','Pencil','Stroke caps and joins']],
+    ['Pictogram figures','42145','Eight little people in poses, all from the same five shapes.',['Shapes','Pen','Transform']],
+    ['Geometric alphabet','42233','A to Z on one grid, using one shape vocabulary.',['Shape Builder','Global colours','Grid']],
+    ['French May patterns','42217','Four tiles with radial and grid repeats that tile together.',['Repeat','Pattern Options']],
+    ['Rug Lord sticker','42468','Bubbly lettering with a die-cut outline around it.',['Offset Path','Type outlines','Pathfinder']]
+   ]],
+   ['Advanced','●●●',[
+    ['hello. gradient script','42057','Your own word in one continuous stroke with a gradient along it.',['Pen','Gradient on stroke','Width tool']],
+    ['2020 ribbon type','42095','A number drawn as a looping ribbon with text running along it.',['Pen','Type on a path','Layering']],
+    ['Veggie hand illustration','42147','A hand holding three vegetables, flat illustration style.',['Pen','Shape Builder','Colour']],
+    ['Loop logo, eight ways','42743','One simple mark redrawn eight ways: pattern, brush, character, texture.',['Brushes','Patterns','Appearance']],
+    ['FIFA-style identity board','42813','A full brand board: mark, type weights, colour grid, lockups.',['Everything']]
+   ]]
+  ]},
+ {id:'affinity', name:'Affinity', c:'--af', tag:'Stage 2 · vector meets photo',
+  intro:'Affinity mixes vector and pixel work in one file, which makes it ideal for posters that combine cut-out photos, drawn shapes and texture. Most of what you learned in Illustrator transfers directly; the tools course is about where things live.',
+  toolsTitle:'Course 1 · Tools tour', toolsMeta:'map from Illustrator · about 2 hours', map:true,
+  tools:[
+   ['Pen tool','Pen tool','<kbd>P</kbd>','Redraw your Illustrator heart and S. Compare the anchor count.'],
+   ['Direct Selection','Node tool','<kbd>A</kbd>','Edit a corner to a curve and back.'],
+   ['Shape Builder / Pathfinder','Shape Builder, Boolean buttons','Toolbar','Rebuild the cloud and moon.'],
+   ['Clipping mask','Drag a layer onto another in Layers','Layers panel','Clip a photo inside a brush stroke.'],
+   ['Cut-outs (a Photoshop job)','Selection Brush + Refine','Pixel tools','Cut a person out of a photo cleanly, hair included.'],
+   ['Effects and textures','Live Filters, noise, texture brushes','Layers › Live Filter','Add grain to a flat-colour poster without touching the original shapes.'],
+   ['Artboards and export','Artboard tool, Export','File › Export','Export a poster as PNG and its shapes as SVG.'],
+   ['Text on a path and text frames','Artistic text, Frame text','<kbd>T</kbd>','Set a headline on a curve and a paragraph in a frame.'],
+   ['Layout (multi-page)','Layout pages and master pages','Pages panel','Make a 4-page brochure that shares one master page.']
+  ],
+  ladder:[
+   ['Beginner','●○○',[
+    ['Photo inside a brush stroke','42089','A portrait clipped inside one big painted stroke.',['Clipping','Brushes']],
+    ['Stay Vogue cut-out','42165','A cut-out person with a vector squiggle behind them.',['Selection Brush','Pen']]
+   ]],
+   ['Intermediate','●●○',[
+    ['Gostoso Demais poster','42205','Photo cut-out, bold type and drawn doodles on a flat background.',['Cut-out','Type','Pen']],
+    ['Grainy shapes poster','42091','Overlapping flat shapes with soft grain and noise.',['Live Filters','Noise','Blend modes']],
+    ['Pippo candy packaging','42739','Flat character faces on a pouch, then a mockup.',['Vector','Mockup']],
+    ['AI bot app icons','42764','Six mascot icons with soft gradients at app-icon sizes.',['Gradients','Export slices']]
+   ]],
+   ['Advanced','●●●',[
+    ['SunSip billboard','42156','A three-panel campaign: illustration, type and product.',['Everything']],
+    ['Loud & Clear poster','42730','The three-figure logo on a gritty textured poster.',['Texture','Vector','Pixel']],
+    ['Create Team brochure','42308','A multi-page brand brochure.',['Layout','Master pages','Type']]
+   ]]
+  ]},
+ {id:'figma', name:'Figma', c:'--fi', tag:'Side quests · layout',
+  intro:'You already know Figma, so these slot in whenever you need a break from vectors. Each one practises layout, which every motion project needs at the start.',
+  noTools:true,
+  ladder:[
+   ['Warm-up','●○○',[
+    ['Building Blocks, again','42296','Redo your Illustrator letters with Figma\'s vector networks. Note what\'s easier and what isn\'t.',['Vector networks','Booleans']],
+    ['People for every vibe','42160','A poster with photos masked into rounded shapes.',['Masks','Auto layout']]
+   ]],
+   ['Layout','●●○',[
+    ['Belnore inline image pills','42454','A sentence with image pills set inline, using auto layout.',['Auto layout','Image fills']],
+    ['Cosmic typeface posters','42169','Four type posters on one grid, each a different weight.',['Grids','Type styles']]
+   ]],
+   ['System','●●●',[
+    ['Wise bento board','42444','A bento-grid brand presentation with app UI tiles.',['Auto layout','Components']]
+   ]]
+  ]},
+ {id:'cavalry', name:'Cavalry', c:'--cv', tag:'Stage 3 · procedural motion',
+  intro:'Cavalry thinks in systems: make one shape, then let duplicators and behaviours make and move the rest. Bring in SVGs from Stage 1 and animate them.',
+  toolsTitle:'Course 1 · Tools tour', toolsMeta:'12 tools · about 4 hours',
+  tools:[
+   ['The interface','Viewport, Scene Tree, Attribute Editor','Find each panel and change a shape\'s colour from the Attribute Editor.'],
+   ['Basic shapes and keyframes','<kbd>K</kbd>','Animate a circle across the screen and back in 2 seconds.'],
+   ['Graph Editor and easing','Graph Editor','Make the same move feel heavy, then bouncy, only by editing the curve.'],
+   ['Import SVG from Illustrator','File › Import','Import your Stage 1 SVG and check every layer kept its name.'],
+   ['Stroke and Trim','Path › Trim','Make a squiggle draw itself on from start to end.'],
+   ['Text Shape','Text Shape','Animate your name letter by letter, then word by word.'],
+   ['Duplicator','Create › Duplicator','Make 30 copies of a circle and switch between grid, circle and random layouts.'],
+   ['Distributions','Linear, Path, Shape Points','Put copies along a path, then inside a letter.'],
+   ['Stagger','Behaviour › Stagger','Make a grid of squares pop in one after another.'],
+   ['Random, Oscillator, Noise','Behaviours','Give each copy a different size, then make them breathe.'],
+   ['Falloff','Behaviour › Falloff','Make shapes grow as a moving circle passes over them.'],
+   ['Render and export','Render Manager','Export a 5-second loop as MP4 and as a GIF.']
+  ],
+  ladder:[
+   ['Beginner','●○○',[
+    ['Enjoy the journey, draw-on','42256','Your Stage 1 squiggle draws on, then the text slides along it.',['Trim','Text on path'],true],
+    ['Building Blocks assemble','42296','Your Stage 1 letters fly in piece by piece.',['Import SVG','Stagger'],true]
+   ]],
+   ['Intermediate','●●○',[
+    ['Typeflow techniques','42474','The four tricks from this pin: text on a path, stretched slices, dots in letters, shapes in a letter.',['Duplicator','Distributions','Stagger']],
+    ['Pixel F variations','42747','One letterform, fifteen generated colour variations.',['Duplicator','Colour arrays']],
+    ['Shapes forming a C','42079','Mixed shapes that swarm into a letter and settle.',['Shape Points','Random']]
+   ]],
+   ['Advanced','●●●',[
+    ['Tarhal sliding pills','42448','Image pills slide into a sentence as the words appear.',['Text Shape','Masks','Timing']],
+    ['Ribbon snake handshake','42318','A thick ribbon path draws itself, then the hands meet.',['Trim','Path animation']],
+    ['Squiggle pattern loop','42036','A seamless looping maze pattern.',['Duplicator','Loops']]
+   ]]
+  ]},
+ {id:'after-effects', name:'After Effects', c:'--ae', tag:'Stage 4 · motion craft',
+  intro:'After Effects is the industry standard for 2D motion. Use it for character-heavy, timing-heavy work and anything a client will hand off to other animators.',
+  toolsTitle:'Course 1 · Tools tour', toolsMeta:'11 tools · about 5 hours',
+  tools:[
+   ['Compositions, layers, precomps','<kbd>Cmd N</kbd> <kbd>Shift Cmd C</kbd>','Make a 1080 × 1080, 5-second comp and precompose two layers.'],
+   ['Keyframes and the Graph Editor','<kbd>P</kbd> <kbd>S</kbd> <kbd>R</kbd> <kbd>T</kbd>','Animate position with Easy Ease, then shape the speed curve.'],
+   ['Import Illustrator files as layers','Create Shapes from Vector Layer','Import your Stage 1 .ai file and convert it to shape layers.'],
+   ['Shape layers','<kbd>Q</kbd> <kbd>G</kbd>','Build a simple icon from shape layers only.'],
+   ['Trim Paths','Add › Trim Paths','Draw a line on, then make it chase itself.'],
+   ['Repeater and Offset Paths','Add › Repeater','Turn one petal into a spinning flower.'],
+   ['Track mattes','Track Matte column','Reveal text through a moving shape.'],
+   ['Text animators','Animate › Position','Make letters drop in one by one with a range selector.'],
+   ['Parenting and the null object','Parent pick-whip','Rig a little arm that waves.'],
+   ['First expressions','wiggle(), loopOut()','Make something wiggle forever with one line.'],
+   ['Render and export','Render Queue, Media Encoder','Export an MP4 for Instagram and a transparent MOV.']
+  ],
+  ladder:[
+   ['Beginner','●○○',[
+    ['hello. draw-on','42057','Your Stage 1 gradient script writes itself on.',['Trim Paths','Easing'],true],
+    ['Art Star letters drop in','42285','Your Stage 1 letters fall in and settle with overshoot.',['Graph Editor','Parenting'],true]
+   ]],
+   ['Intermediate','●●○',[
+    ['Business card flip','42752','A card that flips and shuffles to show both sides.',['3D layers','Easing']],
+    ['Arts for Dementia icon loop','42228','A pattern of icons that loops seamlessly.',['Repeater','loopOut()']],
+    ['Mail design podcast opener','42183','Speech bubbles and patterns pop in to a beat.',['Shape layers','Text animators']]
+   ]],
+   ['Advanced','●●●',[
+    ['SunSip billboard, animated','42156','Your Stage 2 campaign brought to life as a 10-second ad.',['Everything'],true],
+    ['FIFA identity in motion','42813','Your Stage 1 brand board as a motion system: logo build, transitions, type.',['Everything'],true]
+   ]]
+  ]}
+];
+
+const KEY='vtm-progress-v1';
+let done={}; try{done=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}};
+const chk=(id,label)=>`<label class="chk"><input type="checkbox" id="${id}" data-k="${id}" ${done[id]?'checked':''} aria-label="Done: ${label.replace(/"/g,'')}"><span></span></label>`;
+
+document.getElementById('nav').innerHTML=STAGES.map(s=>`<a href="#${s.id}" style="--c:var(${s.c})"><i class="dot"></i>${s.name}<small id="n-${s.id}"></small></a>`).join('');
+
+document.getElementById('stages').innerHTML=STAGES.map(s=>{
+  let tools='';
+  if(!s.noTools){
+    if(s.map){
+      tools=`<h3 class="course">${s.toolsTitle} <span>${s.toolsMeta}</span></h3>
+      <div class="tablewrap"><table class="map"><thead><tr><th></th><th>In Illustrator</th><th>In Affinity</th><th>Find it</th><th>Micro-task</th></tr></thead><tbody>
+      ${s.tools.map((t,i)=>{const id=`${s.id}-t${i}`;return `<tr class="${done[id]?'is-done':''}" data-row="${id}"><td>${chk(id,t[0])}</td><td class="tname">${t[0]}</td><td>${t[1]}</td><td>${t[2]}</td><td class="task">${t[3]}</td></tr>`}).join('')}
+      </tbody></table></div>`;
+    } else {
+      tools=`<h3 class="course">${s.toolsTitle} <span>${s.toolsMeta}</span></h3><ol class="tools">
+      ${s.tools.map((t,i)=>{const id=`${s.id}-t${i}`;return `<li class="${done[id]?'is-done':''}" data-row="${id}"><div class="row">${chk(id,t[0])}<div class="body"><div class="tname">${i+1}. ${t[0]}</div><div class="task">${t[1]} · ${t[2]}</div></div></div></li>`}).join('')}
+      </ol>`;
+    }
+  }
+  const ladder=`<h3 class="course">${s.noTools?'Projects':'Course 2 · Projects from your saves'} <span>tap a name to open the pin</span></h3>
+  <div class="ladder">${s.ladder.map(([rung,pips,ps],r)=>`<div class="rung"><h4><span class="pips">${pips}</span>${rung}</h4>
+    ${ps.map((p,i)=>{const id=`${s.id}-p${r}-${i}`;return `<div class="proj ${done[id]?'is-done':''}" data-row="${id}"><div class="row">${chk(id,p[0])}<div class="body">
+      <div class="pname"><a href="${PIN(p[1])}" target="_blank" rel="noopener">${p[0]}</a></div>
+      <p class="make">${p[2]}</p>
+      <div class="chips">${p[4]?'<span class="chip reuse">uses your file</span>':''}${p[3].map(c=>`<span class="chip">${c}</span>`).join('')}</div>
+    </div></div></div>`}).join('')}</div>`).join('')}</div>`;
+  return `<section class="stage" id="${s.id}" style="--c:var(${s.c})"><div class="stage-head"><h2>${s.name}</h2><span class="tag">${s.tag}</span></div>
+    <p class="stage-intro">${s.intro}</p>${tools}${ladder}</section>`;
+}).join('');
+
+function refresh(){
+  const all=[...document.querySelectorAll('input[data-k]')];
+  const n=all.filter(i=>i.checked).length;
+  const pct=Math.round(n/all.length*100);
+  document.getElementById('pct').textContent=pct+'% done';
+  document.getElementById('count').textContent=`${n} / ${all.length}`;
+  document.getElementById('barfill').style.width=pct+'%';
+  STAGES.forEach(s=>{const b=all.filter(i=>i.dataset.k.startsWith(s.id+'-'));document.getElementById('n-'+s.id).textContent=`${b.filter(i=>i.checked).length}/${b.length}`});
+}
+document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;done[k]=e.target.checked;if(!e.target.checked)delete done[k];save();
+  const row=document.querySelector(`[data-row="${k}"]`);if(row)row.classList.toggle('is-done',e.target.checked);refresh()});
+refresh();
+</script>
